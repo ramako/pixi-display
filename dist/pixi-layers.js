@@ -596,40 +596,54 @@ var pixi_display;
             _super.prototype.destroy.call(this, options);
         };
         Stage.prototype._addRecursive = function (displayObject) {
-            if (!displayObject.visible) {
-                return;
-            }
-            if (displayObject.isLayer) {
-                var layer_1 = displayObject;
-                this._activeLayers.push(layer_1);
-                layer_1.beginWork(this);
-            }
-            if (displayObject != this && displayObject.isStage) {
-                var stage = displayObject;
-                stage.updateAsChildStage(this);
-                return;
-            }
-            var group = displayObject.parentGroup;
-            if (group !== null) {
-                group.addDisplayObject(this, displayObject);
-            }
-            var layer = displayObject.parentLayer;
-            if (layer !== null) {
-                group = layer.group;
-                group.addDisplayObject(this, displayObject);
-            }
-            displayObject.updateOrder = ++Stage._updateOrderCounter;
-            if (displayObject.alpha <= 0 || !displayObject.renderable
-                || !displayObject.layerableChildren
-                || group && group.sortPriority) {
-                return;
-            }
-            var children = displayObject.children;
-            if (children && children.length) {
-                for (var i = 0; i < children.length; i++) {
-                    this._addRecursive(children[i]);
-                }
-            }
+      if ( !displayObject.visible ) {
+               return;
+           }
+           if ( displayObject.isLayer ) {
+               var layer_1 = displayObject;
+               this._activeLayers.push( layer_1 );
+               layer_1.beginWork( this );
+           }
+           if ( displayObject != this && displayObject.isStage ) {
+               var stage = displayObject;
+               stage.updateAsChildStage( this );
+               return;
+           }
+           var group = displayObject.parentGroup;
+
+           if ( group !== null && group !== undefined ) {
+               group.addDisplayObject( this, displayObject );
+           }
+           var layer = displayObject.parentLayer;
+           if ( layer !== null && layer !== undefined ) {
+               group = layer.group;
+               group.addDisplayObject( this, displayObject );
+           }
+           displayObject.updateOrder = ++Stage._updateOrderCounter;
+           if ( displayObject.alpha <= 0 || !displayObject.renderable
+               || !displayObject.layerableChildren
+               || group && group.sortPriority ) {
+               return;
+           }
+           var children = displayObject.children;
+           if ( children && children.length ) {
+               for ( var i = 0; i < children.length; i++ ) {
+                   this._addRecursive( children[ i ] );
+               }
+           }
+       };
+       Stage.prototype._addRecursiveChildren = function ( displayObject ) {
+           if ( displayObject.alpha <= 0 || !displayObject.renderable
+               || !displayObject.layerableChildren ) {
+               return;
+           }
+           var children = displayObject.children;
+           if ( children && children.length ) {
+               for ( var i = 0; i < children.length; i++ ) {
+                   this._addRecursive( children[ i ] );
+               }
+           }
+       };
         };
         Stage.prototype._addRecursiveChildren = function (displayObject) {
             if (displayObject.alpha <= 0 || !displayObject.renderable
